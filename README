@@ -27,6 +27,8 @@
 # version: 0.0.1
 # -------------------------------------------------------------------
 
+This version is compatible with both Python 2 and 3.
+
 Example: 
 
 1. convert apk binary manifest to string manifest.
