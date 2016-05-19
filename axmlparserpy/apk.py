@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 # This file is part of Androguard.
 #
 # Copyright (C) 2010, Anthony Desnos <desnos at t0t0.fr>
@@ -16,13 +18,8 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Androguard.  If not, see <http://www.gnu.org/licenses/>.
 
-import bytecode
-
-from axmlprinter import AXMLPrinter
-from bytecode import SV
-
-import zipfile, StringIO
-from struct import pack, unpack
+from axmlparserpy.axmlprinter import AXMLPrinter
+import zipfile
 from xml.dom import minidom
 
 try:
@@ -48,7 +45,7 @@ class APK:
         self.xml = {}
         self.package = ""
         self.androidversion = {}
-        self.permissions = []
+        self._permissions = []
         self.valid_apk = False
 
         if raw == True:
@@ -61,7 +58,7 @@ class APK:
         if ZIPMODULE == 0:
             self.zip = ChilkatZip(self.__raw)
         else:
-            self.zip = zipfile.ZipFile(StringIO.StringIO(self.__raw))
+            self.zip = zipfile.ZipFile(self.filename)
 
         # CHECK if there is only one embedded file
         #self._reload_apk()
@@ -75,7 +72,7 @@ class APK:
                 self.androidversion["Name"] = self.xml[i].documentElement.getAttribute("android:versionName")
 
                 for item in self.xml[i].getElementsByTagName("uses-permission"):
-                    self.permissions.append(str(item.getAttribute("android:name")))
+                    self._permissions.append(str(item.getAttribute("android:name")))
 
                 self.valid_apk = True
 
@@ -89,7 +86,7 @@ class APK:
     #            if ZIPMODULE == 0:
     #                self.zip = ChilkatZip(self.__raw)
     #            else:
-    #                self.zip = zipfile.ZipFile(StringIO.StringIO(self.__raw))
+    #                self.zip = zipfile.ZipFile(self.filename)
 
     def get_filename(self):
         """
@@ -251,7 +248,7 @@ class APK:
         """
             Return permissions
         """
-        return self.permissions
+        return self._permissions
     permissions = property(get_permissions)
 
     def get_min_sdk_version(self):
@@ -276,10 +273,9 @@ class APK:
     libraries = property(get_libraries)
 
     def show(self):
-        print "FILES: ", self.get_files_types()
-
-        print "ACTIVITIES: ", self.get_activities()
-        print "SERVICES: ", self.get_services()
-        print "RECEIVERS: ", self.get_receivers()
-        print "PROVIDERS: ", self.get_providers()
+        print("FILES: ", self.get_files_types())
+        print("ACTIVITIES: ", self.get_activities())
+        print("SERVICES: ", self.get_services())
+        print("RECEIVERS: ", self.get_receivers())
+        print("PROVIDERS: ", self.get_providers())
 

@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 # This file is part of Androguard.
 #
 # Copyright (C) 2010, Anthony Desnos <desnos at t0t0.fr>
@@ -36,7 +38,7 @@ def _Print(name, arg):
     elif isinstance(arg, SVs):
         buff += arg.get_value().__str__()
 
-    print buff
+    print(buff)
 
 class SV:
     """SV is used to handle more easily a value"""

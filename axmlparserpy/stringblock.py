@@ -1,3 +1,5 @@
+from __future__ import division
+
 # This file is part of Androguard.
 #
 # Copyright (C) 2010, Anthony Desnos <desnos at t0t0.fr>
@@ -16,13 +18,9 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Androguard.  If not, see <http://www.gnu.org/licenses/>.
 
-import bytecode
+import sys
+from axmlparserpy.bytecode import SV
 
-from bytecode import SV
-
-import StringIO
-from struct import pack, unpack
-from xml.dom import minidom
 
 class StringBlock:
     """
@@ -61,7 +59,7 @@ class StringBlock:
         if (size % 4) != 0:
             pass
 
-        for i in range(0, size / 4):
+        for i in range(0, size // 4):
             self.m_strings.append(SV('=L', buff.read(4)))
 
         if self.stylesOffset.get_value() != 0:
@@ -71,7 +69,7 @@ class StringBlock:
             if (size % 4) != 0:
                 pass
 
-            for i in range(0, size / 4):
+            for i in range(0, size // 4):
                 self.m_styles.append(SV('=L', buff.read(4)))
 
     def getRaw(self, idx):
@@ -86,7 +84,10 @@ class StringBlock:
         while length > 0:
             offset += 2
             # Unicode character
-            data += unichr(self.getShort(self.m_strings, offset))
+            if sys.version_info[0] < 3:
+                data += unichr(self.getShort(self.m_strings, offset))
+            else:
+                data += chr(self.getShort(self.m_strings, offset))
 
             # FIXME
             if data[-1] == "&":
@@ -97,8 +98,8 @@ class StringBlock:
         return data
 
     def getShort(self, array, offset):
-        value = array[offset / 4].get_value()
-        if ((offset % 4) / 2) == 0:
+        value = array[offset // 4].get_value()
+        if ((offset % 4) // 2) == 0:
             return value & 0xFFFF
         else:
             return value >> 16
